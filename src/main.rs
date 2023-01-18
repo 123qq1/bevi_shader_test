@@ -1,7 +1,8 @@
 mod scene_spawn;
 mod player_control;
+mod camera_spawn;
 
-use bevy_inspector_egui::WorldInspectorPlugin;
+use bevy_inspector_egui::quick::{ResourceInspectorPlugin, WorldInspectorPlugin};
 use bevy::prelude::*;
 
 
@@ -25,10 +26,11 @@ fn main() {
             ..default()
         }))
 
-        .add_plugins(scene_spawn::SpawnScenePlugins)
+        .add_plugins(camera_spawn::SpawnCameraPlugins)
+        .add_plugin(scene_spawn::SpawnBasicScenePlugin)
         .add_plugin(player_control::PlayerPlugin)
 
-        .add_plugin(WorldInspectorPlugin::new())
+        .add_plugin(WorldInspectorPlugin)
 
         .run();
 }
