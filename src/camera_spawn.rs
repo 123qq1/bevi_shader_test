@@ -95,6 +95,7 @@ fn spawn_camera(
         source_image: image_handle,
     });
 
+
     commands.spawn((
         MaterialMesh2dBundle {
             mesh: quad_handle.into(),
@@ -120,6 +121,8 @@ fn spawn_camera(
         },
         post_processing_pass_layer,
     ));
+
+
 }
 
 #[derive(AsBindGroup, TypeUuid, Debug,Clone)]

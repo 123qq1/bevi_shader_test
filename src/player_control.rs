@@ -194,6 +194,7 @@ fn spawn_player(
         RayHit,
         Name::new("Ray Hit"),
         ));
+
 }
 
 fn jump_check(

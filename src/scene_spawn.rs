@@ -60,9 +60,9 @@ fn spawn_basic_scene(
         }
     }
 
-    for x in 4..6 {
-        for z in 4..6 {
-            spawn_block(&mut commands,assets.grass_cube.clone(),x as f32,1.0, z as f32);
+    for x in 5..6 {
+        for z in 5..6 {
+            spawn_block(&mut commands,assets.grass_cube.clone(),x as f32,2.0, z as f32);
         }
     }
 
