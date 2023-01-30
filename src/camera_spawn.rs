@@ -13,6 +13,8 @@ use bevy::{
     },
     sprite::{Material2d, Material2dPlugin, MaterialMesh2dBundle},
 };
+use bevy::sprite::Mesh2dHandle;
+use bevy::window::WindowResized;
 
 pub struct SpawnCameraPlugins;
 
@@ -33,10 +35,14 @@ impl Plugin for SpawnCameraPlugin{
     fn build(&self, app: &mut App) {
         app
             .add_startup_system(spawn_camera)
+            .add_system(update_camera_plane)
         ;
 
     }
 }
+
+#[derive(Component)]
+struct CameraPlane;
 
 fn spawn_camera(
     mut commands: Commands,
@@ -97,6 +103,7 @@ fn spawn_camera(
 
 
     commands.spawn((
+        CameraPlane,
         MaterialMesh2dBundle {
             mesh: quad_handle.into(),
             material: material_handle,
@@ -123,6 +130,26 @@ fn spawn_camera(
     ));
 
 
+}
+
+
+fn update_camera_plane(
+    mut resize_ev: EventReader<WindowResized>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut query_cp: Query<&mut Mesh2dHandle, With<CameraPlane>>
+)
+{
+    for ev in resize_ev.iter() {
+        let new_w = ev.width;
+        let new_h = ev.height;
+        let mut camera_plane = query_cp.single_mut();
+
+        camera_plane.0 = meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
+            new_w,
+            new_h
+        ))));
+
+    }
 }
 
 #[derive(AsBindGroup, TypeUuid, Debug,Clone)]
