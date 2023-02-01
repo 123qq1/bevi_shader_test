@@ -23,6 +23,7 @@ impl Plugin for PlayerPlugin{
             .add_system(highlight_target)
 
             .add_event::<RayHitEvent>()
+            .add_event::<InteractEvent>()
 
             .register_type::<GroundControl>()
         ;
@@ -39,6 +40,8 @@ pub struct GroundControl{
 pub struct RayHit;
 
 pub struct RayHitEvent(Option<Entity>);
+
+pub struct InteractEvent(Entity);
 
 #[derive(Component)]
 pub struct Player;
@@ -94,6 +97,8 @@ fn interact_raycast(
     query_gt_ph : Query<&GlobalTransform, (Without<PlayerRay>, With<PlayerHead>)>,
     query_e_p : Query<Entity, With<Player>>,
     mut ev_rh: EventWriter<RayHitEvent>,
+    mut ev_i: EventWriter<InteractEvent>,
+    mouse: Res<Input<MouseButton>>,
 ){
     let max_toi = 4.0;
 
@@ -111,6 +116,7 @@ fn interact_raycast(
         .exclude_sensors()
         ;
 
+
     if let Some((entity, _)) = rapier_context.cast_ray(
         ray_pos,
         ray_dir,
@@ -119,9 +125,12 @@ fn interact_raycast(
         filter,
     ){
         ev_rh.send(RayHitEvent(Some(entity)));
+        if mouse.just_pressed(MouseButton::Left) {
+            ev_i.send(InteractEvent(entity));
+        }
     }
     else{
-        ev_rh.send(RayHitEvent(None))
+        ev_rh.send(RayHitEvent(None));
     }
 }
 
@@ -271,7 +280,9 @@ fn move_player(
         m_vec += p_trans.back();
     }
 
-    //m_vec = m_vec.normalize();
+    if m_vec.length() > 0.0{
+        m_vec = m_vec.normalize();
+    }
 
     m_vec = m_vec * speed_multi;
 
