@@ -22,7 +22,7 @@ fn main() {
                 width: WIDTH,
                 height:HEIGHT,
                 title: "Shader Test".to_string(),
-                resizable: false,
+                resizable: true,
                 ..default()
             },
             ..default()

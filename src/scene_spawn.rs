@@ -18,7 +18,7 @@ impl Plugin for SpawnBasicScenePlugin{
 
             .add_startup_system(spawn_basic_scene)
 
-            .add_plugin(RapierDebugRenderPlugin::default())
+            //.add_plugin(RapierDebugRenderPlugin::default())
 
         ;
 
