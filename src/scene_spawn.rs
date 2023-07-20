@@ -3,13 +3,13 @@ use bevy::prelude::*;
 use std::f32::consts::PI;
 use bevy_rapier3d::prelude::*;
 
+use crate::dict::GameAssets;
+
 pub struct SpawnBasicScenePlugin;
 
 impl Plugin for SpawnBasicScenePlugin{
     fn build(&self, app: &mut App) {
         app
-            .add_startup_system_to_stage(StartupStage::PreStartup,asset_loading)
-
             .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
             .insert_resource(RapierConfiguration{
                 gravity: Vec3::new(0.0,-10.0,0.0),
@@ -25,10 +25,11 @@ impl Plugin for SpawnBasicScenePlugin{
     }
 }
 
-#[derive(Resource)]
-pub struct GameAssets{
-    plant: Handle<Scene>,
-    grass_cube: Handle<Scene>,
+pub struct SpawnItemEvent{
+    x: f32,
+    y: f32,
+    z: f32,
+    id: i32,
 }
 
 fn spawn_block(
@@ -111,7 +112,7 @@ fn spawn_flora(
             transform: Transform::from_xyz(x, y, z),
             ..default()
         },
-        RigidBody::Fixed,
+        RigidBody::Dynamic,
     ))
         .with_children(|parent| {
             parent.spawn((
@@ -124,13 +125,29 @@ fn spawn_flora(
         });
 }
 
-fn asset_loading(
-    mut commands: Commands,
-    assets: Res<AssetServer>,
-){
-    commands.insert_resource(GameAssets{
-        plant: assets.load("Plant.glb#Scene0"),
-        grass_cube: assets.load("Grass.glb#Scene0"),
-    });
+fn spawn_item(
+    commands: &mut Commands,
+    scene: Handle<Scene>,
+    x: f32,
+    y: f32,
+    z: f32
+) {
+    commands.spawn((
+        SceneBundle {
+            scene,
+            transform: Transform::from_xyz(x, y, z),
+            ..default()
+        },
+        RigidBody::Fixed,
+    ))
+        .with_children(|parent| {
+            parent.spawn((
+                TransformBundle {
+                    local: Transform::from_xyz(0.0, -0.4, 0.0),
+                    ..default()
+                },
+                Collider::cuboid(0.2, 0.1, 0.2),
+            ));
+        });
 }
 
